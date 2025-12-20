@@ -2,12 +2,18 @@ package com.example.creativetestmod;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.SharedConstants;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import org.slf4j.Logger;
+
+import com.example.creativetestmod.registry.ModItems;
+import com.example.creativetestmod.registry.ModEvents;
 
 /**
  * Minimal entrypoint for the Creative Test Mod targeting Minecraft 1.21.11.
@@ -18,11 +24,22 @@ public final class CreativeTestMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public CreativeTestMod() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::commonSetup);
+        BusGroup modBus = FMLJavaModLoadingContext.get().getModBusGroup();
+
+        ModItems.ITEMS.register(modBus);
+        FMLCommonSetupEvent.getBus(modBus).addListener(this::commonSetup);
+        BuildCreativeModeTabContentsEvent.getBus(modBus).addListener(this::buildCreativeTabContents);
+
+        MinecraftForge.EVENT_BUS.register(ModEvents.class);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        LOGGER.info("Creative Test Mod initialized for Minecraft {} on Forge {}", SharedConstants.getCurrentVersion().getName(), FMLLoader.versionInfo().forgeVersion());
+        LOGGER.info("Creative Test Mod initialized for Minecraft {} on Forge {}", SharedConstants.getCurrentVersion().name(), FMLLoader.versionInfo().forgeVersion());
+    }
+
+    private void buildCreativeTabContents(final BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
+            event.accept(ModItems.GLOWING_APPLE);
+        }
     }
 }
