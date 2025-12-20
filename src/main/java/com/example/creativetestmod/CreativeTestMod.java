@@ -1,23 +1,19 @@
 package com.example.creativetestmod;
 
+import com.example.creativetestmod.registry.ModEvents;
+import com.example.creativetestmod.registry.ModItems;
 import com.mojang.logging.LogUtils;
 import net.minecraft.SharedConstants;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.eventbus.api.bus.BusGroup;
 import org.slf4j.Logger;
 
-import com.example.creativetestmod.registry.ModItems;
-import com.example.creativetestmod.registry.ModEvents;
-
-/**
- * Minimal entrypoint for the Creative Test Mod targeting Minecraft 1.21.11.
- */
 @Mod(CreativeTestMod.MOD_ID)
 public final class CreativeTestMod {
     public static final String MOD_ID = "creative_test_mod";
@@ -25,8 +21,7 @@ public final class CreativeTestMod {
 
     public CreativeTestMod() {
         BusGroup modBus = FMLJavaModLoadingContext.get().getModBusGroup();
-
-        ModItems.ITEMS.register(modBus);
+        ModItems.register(modBus);
         FMLCommonSetupEvent.getBus(modBus).addListener(this::commonSetup);
         BuildCreativeModeTabContentsEvent.getBus(modBus).addListener(this::buildCreativeTabContents);
 
@@ -34,7 +29,8 @@ public final class CreativeTestMod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        LOGGER.info("Creative Test Mod initialized for Minecraft {} on Forge {}", SharedConstants.getCurrentVersion().name(), FMLLoader.versionInfo().forgeVersion());
+        LOGGER.info("Creative Test Mod initialized for Minecraft {} on Forge {}.",
+                SharedConstants.getCurrentVersion().name(), FMLLoader.versionInfo().forgeVersion());
     }
 
     private void buildCreativeTabContents(final BuildCreativeModeTabContentsEvent event) {
